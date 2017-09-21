@@ -6,7 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.TextView;
+import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -15,6 +15,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.tapadoo.alerter.Alerter;
 
 import br.com.android.colluradev.locationapp.R;
 
@@ -23,7 +24,6 @@ class MainView extends AppCompatActivity implements
         , MVP.View {
 
     private MainPresenter mainPresenter;
-    private TextView txtLocal;
     private LatLng latLng;
     private MapView mapView;
 
@@ -37,8 +37,6 @@ class MainView extends AppCompatActivity implements
         mapView = findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
-
-        txtLocal = findViewById(R.id.txtLocal);
 
         mainPresenter.getPosition();
     }
@@ -85,12 +83,28 @@ class MainView extends AppCompatActivity implements
     }
 
     @Override
-    public void geocodingCallback(String s) {
-        txtLocal.setText(s);
+    public void geocodingCallback(String string) {
+        showAlerter(string);
     }
 
     @Override
     public void geocodingErrorCalback() {
-        txtLocal.setText( R.string.local_desconhecido );
+        showAlerter(getResources().getString(R.string.local_desconhecido));
     }
+
+    @Override
+    public void showAlerter(String text) {
+        Alerter.create(this)
+                .setDuration(100000)
+                .setText(text)
+                .setBackgroundColorInt(getResources().getColor(R.color.black))
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Alerter.hide();
+                    }
+                })
+                .show();
+    }
+
 }

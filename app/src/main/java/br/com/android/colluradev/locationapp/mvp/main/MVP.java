@@ -8,7 +8,7 @@ interface MVP {
         void getPositionCallback(LatLng latLng);
         void geocodingCallback(String s);
         void geocodingErrorCalback();
-
+        void showAlerter(String text);
     }
 
 
