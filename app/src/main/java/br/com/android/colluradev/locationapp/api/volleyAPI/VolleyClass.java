@@ -19,6 +19,7 @@ import br.com.android.colluradev.locationapp.api.locationAPI.GeocodingResponseCl
 import br.com.android.colluradev.locationapp.mvp.main.MainModel;
 public class VolleyClass {
 
+    private final String STATUS_OK = "OK";
     private JsonObjectRequest jsonObjectRequest;
     private Context context;
     private RequestQueue rq;
@@ -33,7 +34,6 @@ public class VolleyClass {
         gson = new Gson();
     }
 
-
     public void getGeocoding(LatLng latLng) {
         url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+latLng.latitude+","+latLng.longitude+"&key=AIzaSyBzQdf77GyEOrCqlLNtjAE3pR1uAT4LiFE";
         jsonObjectRequest = new JsonObjectRequest
@@ -43,7 +43,12 @@ public class VolleyClass {
                     public void onResponse(JSONObject response) {
                         String obj = response.toString();
                         geocodingResponseClass = gson.fromJson(obj, GeocodingResponseClass.class);
-                        callback(geocodingResponseClass.results[0].formatted_address);
+                        if( geocodingResponseClass.status.equals( STATUS_OK ) ) {
+                            callback(geocodingResponseClass.results[0].formatted_address);
+                        }
+                        else{
+                            mainModel.geocodingErrorCalback();
+                        }
                     }
                 }, new Response.ErrorListener() {
 
@@ -60,8 +65,6 @@ public class VolleyClass {
         }
         rq.add(jsonObjectRequest);
     }
-
-
 
     private void callback ( String s ) {
         mainModel.geocodingCallback ( s );

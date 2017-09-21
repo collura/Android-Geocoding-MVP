@@ -2,13 +2,12 @@ package br.com.android.colluradev.locationapp.mvp.main;
 
 
 import com.google.android.gms.maps.model.LatLng;
-
-import org.json.JSONObject;
 interface MVP {
 
     interface View {
         void getPositionCallback(LatLng latLng);
         void geocodingCallback(String s);
+        void geocodingErrorCalback();
 
     }
 
@@ -19,6 +18,9 @@ interface MVP {
         void getPositionCallback(LatLng latLng);
         void getGeocoding(LatLng latLng);
         void geocodingCallback(String s);
+
+        void geocodingErrorCalback();
+
     }
 
 
@@ -27,5 +29,8 @@ interface MVP {
         void getGeocoding(LatLng latLng);
         void geocodingCallback(String s);
         void getPositionCallback(LatLng latLng);
+
+        void geocodingErrorCalback();
+
     }
 }

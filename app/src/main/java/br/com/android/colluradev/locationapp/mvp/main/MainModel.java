@@ -32,6 +32,11 @@ public class MainModel implements MVP.Model {
     }
 
     @Override
+    public void geocodingErrorCalback() {
+        mainPresenter.geocodingErrorCalback();
+    }
+
+    @Override
     public void getGeocoding(LatLng latLng) {
         volleyClass.getGeocoding(latLng);
     }

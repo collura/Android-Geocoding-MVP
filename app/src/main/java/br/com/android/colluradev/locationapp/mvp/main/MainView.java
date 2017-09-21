@@ -1,42 +1,30 @@
 package br.com.android.colluradev.locationapp.mvp.main;
 
+
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-
-import org.json.JSONObject;
 
 import br.com.android.colluradev.locationapp.R;
-import br.com.android.colluradev.locationapp.mvp.BaseView;
 
-public class MainView extends BaseView implements
-       OnMapReadyCallback
-      ,MVP.View{
+class MainView extends AppCompatActivity implements
+        OnMapReadyCallback
+        , MVP.View {
 
     private MainPresenter mainPresenter;
-
-    private GoogleMap mMap;
     private TextView txtLocal;
-    LatLng latLng;
-
+    private LatLng latLng;
     private MapView mapView;
 
     @Override
@@ -55,6 +43,39 @@ public class MainView extends BaseView implements
         mainPresenter.getPosition();
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        GoogleMap mMap = googleMap;
+
+        final Marker userMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("You"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        userMarker.setDraggable(true);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+
+        mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker marker) {}
+            @Override
+            public void onMarkerDrag(Marker marker) {}
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+               mainPresenter.getGeocoding(marker.getPosition());
+            }
+        });
+
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                mainPresenter.getGeocoding(latLng);
+                userMarker.setPosition(latLng);
+                return false;
+            }
+        });
+    }
 
     @Override
     public void getPositionCallback(LatLng latLng) {
@@ -69,10 +90,7 @@ public class MainView extends BaseView implements
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        mMap.addMarker(new MarkerOptions().position(latLng).title("Local Atual"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+    public void geocodingErrorCalback() {
+        txtLocal.setText( R.string.local_desconhecido );
     }
-
 }

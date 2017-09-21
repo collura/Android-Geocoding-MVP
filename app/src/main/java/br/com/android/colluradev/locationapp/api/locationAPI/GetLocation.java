@@ -16,40 +16,42 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import br.com.android.colluradev.locationapp.mvp.main.MainModel;
-public class GetLocation implements OnSuccessListener, OnFailureListener {
+public class GetLocation {
 
-    private FusedLocationProviderClient fusedLocationProviderClient;
-    private LatLng latLng;
     private MainModel mainModel;
 
     public GetLocation(MainModel mainModel, Context context) {
         this.mainModel = mainModel;
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.i("Tag", "Sem Permissão");
+            Log.i("Tag", "Not Permission");
         }
         else {
             fusedLocationProviderClient.getLastLocation()
-                    .addOnSuccessListener(this)
-                    .addOnFailureListener(this);
-        }
+                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if( location != null ) {
+                            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                            getPositionCallback(latLng);
+                        } else {
+                            Log.i("Tag", "Location == Null");
+                        }
+                    }
+                })
+
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("Tag", "Fail to get Location.");
+
+                    }
+                });
+            }
     }
 
-    @Override
-    public void onSuccess(Object o) {
-        Location l = ( Location ) o;
-        if( l != null ) {
-            latLng = new LatLng(l.getLatitude(), l.getLongitude());
-            mainModel.getPositionCallback(latLng);
-        } else {
-            Log.i("Tag", "Location == Null");
-        }
-    }
 
-
-    @Override
-    public void onFailure(@NonNull Exception e) {
-        Log.i("Tag", "Falha na operação de Obter a localização.");
-
+    private void getPositionCallback (LatLng latLng) {
+        mainModel.getPositionCallback(latLng);
     }
 }

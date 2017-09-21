@@ -4,16 +4,13 @@ package br.com.android.colluradev.locationapp.mvp.main;
 import android.content.Context;
 
 import com.google.android.gms.maps.model.LatLng;
+class MainPresenter implements MVP.Presenter {
 
-import org.json.JSONObject;
-public class MainPresenter implements MVP.Presenter {
-
-    private MainView mainView;
     Context context;
+    private MainView mainView;
     private MainModel mainModel;
 
-
-    public  MainPresenter ( MainView mainView ) {
+    MainPresenter ( MainView mainView ) {
         this.mainView = mainView;
         this.context = mainView;
         mainModel = new MainModel( this );
@@ -39,5 +36,10 @@ public class MainPresenter implements MVP.Presenter {
     @Override
     public void geocodingCallback(String s) {
         mainView.geocodingCallback(s);
+    }
+
+    @Override
+    public void geocodingErrorCalback() {
+        mainView.geocodingErrorCalback();
     }
 }
