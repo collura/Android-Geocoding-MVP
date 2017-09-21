@@ -3,6 +3,7 @@ package br.com.android.colluradev.locationapp.api.volleyAPI;
 
 import android.content.Context;
 import android.util.Log;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -11,8 +12,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+
 import org.json.JSONObject;
 
+import br.com.android.colluradev.locationapp.api.locationAPI.GeocodingResponseClass;
 import br.com.android.colluradev.locationapp.mvp.main.MainModel;
 public class VolleyClass {
 
@@ -21,7 +24,7 @@ public class VolleyClass {
     private RequestQueue rq;
     private MainModel mainModel;
     private String url;
-    private MainModel.GoogleGeoCodeResponse result;
+    private GeocodingResponseClass geocodingResponseClass;
     private Gson gson;
 
     public VolleyClass (MainModel mainModel, Context context){
@@ -39,8 +42,8 @@ public class VolleyClass {
                     @Override
                     public void onResponse(JSONObject response) {
                         String obj = response.toString();
-                        result = gson.fromJson(obj, MainModel.GoogleGeoCodeResponse.class);
-                        callback(result.results[0].formatted_address);
+                        geocodingResponseClass = gson.fromJson(obj, GeocodingResponseClass.class);
+                        callback(geocodingResponseClass.results[0].formatted_address);
                     }
                 }, new Response.ErrorListener() {
 
@@ -60,7 +63,7 @@ public class VolleyClass {
 
 
 
-    void callback ( String s ) {
+    private void callback ( String s ) {
         mainModel.geocodingCallback ( s );
     }
 
