@@ -35,7 +35,6 @@ public class GetLocation {
                             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                             getPositionCallback(latLng);
                         } else {
-                            //your callback error
                             Log.i("Tag", "Location == Null");
                         }
                     }
@@ -44,7 +43,6 @@ public class GetLocation {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        //your callback error
                         Log.i("Tag", "Fail to get Location.");
 
                     }
